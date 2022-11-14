@@ -9,6 +9,7 @@ import static java.lang.Double.parseDouble;
  * expression in format like ( a + ( b - ( c * ( d / ( sqrt e ) ) ) ) )
  * where a, b, c, d, e are real numbers
  * @author Hana Mahmutović
+ * @version 1
  */
 public class ExpressionEvaluator {
 
