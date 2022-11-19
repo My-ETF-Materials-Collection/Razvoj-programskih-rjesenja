@@ -1,71 +1,79 @@
 package ba.unsa.etf.rpr;
 
 import java.util.Stack;
-
 import static java.lang.Double.parseDouble;
 
 /**
- * ExpressionEvaluator class that uses two Stacks to calculate
- * expression in format like ( a + ( b - ( c * ( d / ( sqrt e ) ) ) ) )
+ * class that uses two stacks to calculate the expression
+ * of format ( a + ( b - ( c * ( d / ( sqrt e ) ) ) ) )
  * where a, b, c, d, e are real numbers
  * @author Hana Mahmutović
- * @version 1
+ * @version 2
  */
 public class ExpressionEvaluator {
 
     private static final Stack<String> operators = new Stack<>();
-
     private static final Stack<Double> operands = new Stack<>();
 
     /**
-     * evaluate method that receives a string and calculates its value using Dijkstra's Algorithm
+     * method that calculates the value of a string (ONLY VALID MATH EXPRESSIONS) using Dijkstra's Algorithm
+     * @param s string
+     * @return double
      */
     public static double evaluate(String s){
-        String[] arrOfStr = s.split(" ");
-        for(String x : arrOfStr){
-            operatorChecker(x);
+        String[] arrayOfStrings = s.split(" ");
+        /* NOTE : need to check if there is more operations than brackets e.g. ( 1 + 8 / 2 )
+         * stack would take the last operation and evaluate it, but it needs to throw an exception in this case
+         * */
+        int noOpeningBrackets = 0, noClosingBrackets = 0;
+        for (String x : arrayOfStrings) {
+            checkOperator(x);
             switch (x) {
-                case "(": break;
-                case "+":
-                case "-":
-                case "x":
-                case "sqrt":
-                case "/":
+                case "(":
+                    noOpeningBrackets++; break;
+                case "+": case "-": case "x": case "sqrt": case "/": case "*":
                     operators.push(x); break;
                 case ")":
+                    noClosingBrackets++;
+                    if(operators.isEmpty()) continue;
                     String operator = operators.pop();
                     double operand = operands.pop();
                     switch (operator) {
                         case "+": operand = operands.pop() + operand; break;
                         case "-": operand = operands.pop() - operand; break;
-                        case "x": operand = operands.pop() * operand; break;
-                        case "/": operand = operands.pop() / operand; break;
-                        case "sqrt": operand = Math.sqrt(operand); break;
+                        case "x": case "*": operand = operands.pop() * operand; break;
+                        case "/":
+                            if (operand == 0) throw new RuntimeException("Division by 0 is undefined!");
+                            operand = operands.pop() / operand; break;
+                        case "sqrt":
+                            operand = Math.sqrt(operand); break;
                     }
                     operands.push(operand); break;
-                default: operands.push(parseDouble(x)); break;
+                default:
+                    operands.push(parseDouble(x)); break;
             }
         }
+        if(operators.size()>0 || operands.size()!=1 || noOpeningBrackets!=noClosingBrackets) throw new RuntimeException("Invalid input! Not enough brackets.");
         return operands.pop();
     }
 
     /**
-     * Checks if the given string is a valid and pre-defined operator or a real number, throws exception if it isn't
+     * checks if the given string is a valid operator or a real number, if not throws an exception
      */
-    static void operatorChecker(String x) {
-        if(!x.equals("(") && !x.equals("+") && !x.equals("-") && !x.equals("sqrt") && !x.equals("x") && !x.equals("/") && !x.equals(")") && !isNumeric(x)) throw new RuntimeException(errorMessage);
+    static void checkOperator(String x) {
+        if(!x.equals("(") && !x.equals("+") && !x.equals("-") && !x.equals("sqrt") && !x.equals("*") && !x.equals("x") && !x.equals("/") && !x.equals(")") && !isRealNumber(x)) throw new RuntimeException(errorMessage);
     }
 
     /**
-     * checks if String is a real number (double)
-     * @param string string that is being checked
+     * checks if a String is a real number (double)
+     * @param s string
      * @return true if string is a real number and false if it isn't
      */
-    public static boolean isNumeric(String string) {
+    public static boolean isRealNumber(String s) {
         double intValue;
-        if (string == null || string.equals("")) return false;
+        if (s == null || s.equals("")) return false;
         try {
-            intValue = Double.parseDouble(string);
+            intValue = Double.parseDouble(s);
             return true;
         }catch (NumberFormatException e) {
             return false;
@@ -75,9 +83,6 @@ public class ExpressionEvaluator {
     /**
      * main error message that ends in output stream if input is not as expected
      */
-    public static String errorMessage = "Unsupported format! " +
-            "\nNOTE: Please use this reference: ( a + ( b - ( c * ( d / ( sqrt e ) ) ) ) )" +
-            "\na, b, c, d, e - real number values" +
-            "\nThe order of operators You use in expression is not important but note that n-operators need n-bracket pairs";
+    public static String errorMessage = "Invalid input! NOTE : Every operator needs its pair of brackets.";
 
 }
