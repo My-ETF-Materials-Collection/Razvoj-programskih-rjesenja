@@ -1,3 +1,3 @@
-Predavanja i urađeni zadaci iz tutorijala, zadaća i sl. / Razvoj programskih rješenja / III semestar / Elektrotehnički fakultet Sarajevo
+Urađeni zadaci iz zadaća / Razvoj programskih rješenja / III semestar / Elektrotehnički fakultet Sarajevo
 
-- Zadaće i ostali tutorijali su odvojeni prema granama. Da bi pristupili određenoj laboratorijskoj vježbi, promjenite odgovarajuću granu.
+- Predavanja, zadaće i ostali tutorijali su odvojeni prema granama. Da bi pristupili određenoj laboratorijskoj vježbi, promjenite odgovarajuću granu.
